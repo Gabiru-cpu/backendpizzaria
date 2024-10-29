@@ -1,17 +1,30 @@
-FROM openjdk:17-jdk-alpine
+# Etapa de construção
+FROM maven:3.8.7-openjdk-17 AS build
 
+# Define o diretório de trabalho
 WORKDIR /app
 
+# Copia o arquivo pom.xml e as dependências para o cache do Docker
 COPY pom.xml .
+RUN mvn dependency:go-offline
 
+# Copia o código-fonte para o contêiner
 COPY src ./src
 
-COPY mvnw .
+# Compila o projeto
+RUN mvn package -DskipTests
 
-COPY .mvn .mvn
+# Etapa final
+FROM openjdk:17-jdk-slim
 
-RUN chmod +x mvnw
+# Define o diretório de trabalho
+WORKDIR /app
 
-RUN ./mvnw package -DskipTests
+# Copia o JAR gerado na etapa de build para o contêiner final
+COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
-CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
+# Define a porta que será exposta (ajuste para a porta usada pela sua aplicação, se diferente)
+EXPOSE 8080
+
+# Comando para executar a aplicação
+ENTRYPOINT ["java", "-jar", "app.jar"]
