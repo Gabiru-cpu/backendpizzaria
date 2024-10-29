@@ -1,16 +1,17 @@
-FROM ubuntu:latest AS build
+FROM openjdk:17-jdk-alpine
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
-COPY . .
+WORKDIR /app
 
-RUN apt-get install maven -y
-RUN mvn clean install
+COPY pom.xml .
 
-FROM openjdk:17-jdk-slim
+COPY src ./src
 
-EXPOSE 8080
+COPY mvnw .
 
-COPY --from=build /target/backend-0.0.1-SNAPSHOT.jar app.jar
+COPY .mvn .mvn
 
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+RUN chmod +x mvnw
+
+RUN ./mvnw package -DskipTests
+
+CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
