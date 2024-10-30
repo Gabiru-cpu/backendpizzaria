@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/estoque")
+@CrossOrigin(origins = "*") // Permite acesso de qualquer origem
 public class EstoqueController {
     private final EstoqueRepository estoqueRepository;
 

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/receita")
+@CrossOrigin(origins = "*") // Permite acesso de qualquer origem
 public class ReceitaController {
 
     private final ReceitaRepository receitaRepository;
