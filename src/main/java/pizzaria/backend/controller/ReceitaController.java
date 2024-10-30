@@ -79,4 +79,25 @@ public class ReceitaController {
         return ResponseEntity.ok(receitasSugeridas);
     }
 
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<Receita> editarReceita(@PathVariable Long id, @RequestBody Receita receitaAtualizada) {
+        return receitaRepository.findById(id)
+                .map(receita -> {
+                    receita.setNomeReceita(receitaAtualizada.getNomeReceita());
+                    receita.setIngredientes(receitaAtualizada.getIngredientes());
+                    return ResponseEntity.ok(receitaRepository.save(receita));
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Void> deletarReceita(@PathVariable Long id) {
+        if (receitaRepository.existsById(id)) {
+            receitaRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
 }
