@@ -17,6 +17,8 @@ public class Receita {
 
     private String nomeReceita;
 
+    private Double preco;
+
     @ElementCollection
     private List<String> ingredientes;
 
